@@ -1,0 +1,7 @@
+when CLIENTSSL_HANDSHAKE {
+log local0. "Client side [IP::client_addr]:[TCP::client_port] <-> [IP::local_addr clientside]:[TCP::local_port clientside] RSA Session-ID:[SSL::sessionid] Master-Key:[SSL::sessionsecret]"
+}
+
+when SERVERSSL_HANDSHAKE {
+log local0. "Client side [IP::client_addr]:[TCP::client_port] <-> [IP::local_addr clientside]:[TCP::local_port clientside] server side [IP::local_addr]:[TCP::local_port] <-> [IP::server_addr]:[TCP::server_port] RSA Session-ID:[SSL::sessionid] Master-Key:[SSL::sessionsecret]"
+}
