@@ -2,13 +2,13 @@
 
 when RULE_INIT {
     array set static::timerange {
-        Sunday {"05:30" "16:00"}
-        Monday {"05:30" "16:00"}
-        Tuesday {"05:30" "6:00"}
-        Wednesday {"05:30" "16:00"}
-        Thursday {"05:30" "16:00"}
-        Friday {"05:30" "16:00"}
-        Saturday {"05:30" "16:00"}
+        Sunday {"05:30" "20:00"}
+        Monday {"05:30" "20:00"}
+        Tuesday {"05:30" "20:00"}
+        Wednesday {"05:30" "20:00"}
+        Thursday {"05:30" "20:00"}
+        Friday {"05:30" "20:00"}
+        Saturday {"05:30" "20:00"}
     }
 }
  
