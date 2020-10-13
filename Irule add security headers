@@ -1,0 +1,54 @@
+when RULE_INIT {
+ set static::max_age 16070400
+}
+
+when HTTP_REQUEST {
+  if {[HTTP::has_responded]} {return}
+  set rq_host_header [string tolower [HTTP::host]]
+  if { ([string tolower [HTTP::uri]] starts_with "/gponform/diag_form") } {
+     #log local0. "Rejecting GPON request from [IP::client_addr]"
+    reject
+  }
+  #Host header injection protection
+  if {not ([string tolower [HTTP::host]] ends_with  "yourdomain.com") and not ([string tolower [HTTP::host]] ends_with  "yourdomain.com")}{
+        #log local0. "Host header attack from [IP::client_addr] --- [HTTP::host]"
+        HTTP::respond 400 content "Bad Host header"  
+  }
+}
+
+when HTTP_RESPONSE_RELEASE  {
+     #HSTS
+     if {not [HTTP::header exists "Strict-Transport-Security"]}{
+        HTTP::header insert Strict-Transport-Security "max-age=$static::max_age; includeSubDomains; preload"
+     }
+     #X-XSS-Protection
+     if {not [HTTP::header exists "X-XSS-Protection"]}{
+     HTTP::header insert X-XSS-Protection "1; mode=block"
+     }
+     #X-Frame-Options
+     #log local0. "host header {$rq_host_header}"
+     #Add X-Frame-Options with specify ALLOW-FROM
+     if {($rq_host_header equals "yourdomain.com") or ($rq_host_header equals "yourdomain2.com")}{
+         if {not [HTTP::header exists "X-Frame-Options"]}{
+            HTTP::header insert X-Frame-Options {ALLOW-FROM your-allow-domain.com}
+         }
+     }else {
+        if {not [HTTP::header exists "X-Frame-Options"]}{
+        HTTP::header insert X-Frame-Options "SAMEORIGIN"
+        }
+     }
+
+     #X-Content-Type-Options
+     #if {(not [HTTP::header exists "X-Content-Type-Options"])}{
+     #   HTTP::header insert X-Content-Type-Options "nosniff"
+     #}
+     # (Server, X-Powered-By in this example)
+     if {[HTTP::header exists "X-Powered-By"]}{
+         HTTP::header insert X-Powered-By [HTTP::header value "NOSIG"]
+     }  
+     # Content-Security-Policy
+     if {not [HTTP::header exists "Content-Security-Policy"]}{
+         HTTP::header insert Content-Security-Policy "script-src 'self' 'unsafe-eval' 'unsafe-inline' https:"
+     }
+
+}
