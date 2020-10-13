@@ -1,0 +1,12 @@
+when HTTP_RESPONSE {
+ HTTP::cookie secure "JSESSIONID" enable
+    set ck [HTTP::header values "Set-Cookie"]
+    HTTP::header remove "Set-Cookie"
+    foreach acookie $ck {
+       if {$acookie starts_with "JSESSIONID"} {
+          HTTP::header insert "Set-Cookie" "${acookie}; HttpOnly"
+       } else {
+          HTTP::header insert "Set-Cookie" "${acookie}; HttpOnly"
+       }
+    }
+ }
