@@ -1,0 +1,11 @@
+#irule to insert META DATA for Google Site Verification
+
+when HTTP_REQUEST {        
+    STREAM::disable
+    #HTTP::header remove "Accept-Encoding"
+}
+when HTTP_RESPONSE {
+    #Insert META DATA
+	STREAM::expression {@</head>@<meta name="google-site-verification" content="blablahblah-your-google-site-verification-key" /></head>@}
+    STREAM::enable
+}
